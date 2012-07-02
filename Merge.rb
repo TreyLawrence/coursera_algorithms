@@ -33,28 +33,43 @@ class Sort
     end
   
     def split(array)
+      # print "split(#{array}) = #{[array[0..(array.length/2 - 1)],array[(array.length/2)..-1]]}\n"
       [array[0..(array.length/2 - 1)],array[(array.length/2)..-1]]
     end
 
-    def merge(array1, array2)
-      if array1.empty?
-        array2.dup
-      elsif array2.empty?
-        array1.dup
-      elsif array1.first <= array2.first
-        [array1.first] + merge(array1[1..-1], array2)
-      else
-        @count += 1
-        [array2.first] + merge(array1, array2[1..-1])
+    def merge(first, second)
+      # print "merge(#{first}, #{second})"
+      a1 = 0
+      a2 = 0
+      result = []
+      while (a1 + a2) < (first.length + second.length)
+        # print("while(#{a1} + #{a2} < (#{first.length} + #{second.length}))\n")
+        # print("first: #{first}, second: #{second}\n")
+        if a1 == first.length
+          result += second[a2..-1]
+          a2 = second.length
+        elsif a2 == second.length
+          result += first[a1..-1]
+          a1 = first.length
+        elsif first[a1] < second[a2]
+          result << first[a1]
+          a1 += 1
+        else second[a2] < first[a1]
+          result << second[a2]
+          a2 += 1
+          @count += first.length - a1
+        end
       end
+      # print " = #{result}\n"
+      result
     end
 end
 
 file = File.new("IntegerArray.txt", "r")
-array = file.read.split("\r\n").each { |number| number.to_i }
-# array = [7,4,8,6,9]
+array = file.read.split("\r\n").map { |number| number.to_i }
+# array = (1..10).to_a.shuffle
+# puts array.to_s
 merge = Sort.new(array)
 
-print merge.merge_sort
-puts ""
+puts merge.merge_sort.to_s
 puts merge.count
